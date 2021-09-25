@@ -1,0 +1,26 @@
+name: Deploy Release
+on:
+  push:
+    branches:
+      - release
+jobs:
+  deploy-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        id: build
+        uses: josephbmanley/build-godot-action@v1.4.1
+        with:
+          name: index.html
+          preset: html5
+          package: "true"
+      - name: Butler Push
+        uses: josephbmanley/butler-publish-itchio-action@v1.0.2
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: html5
+          ITCH_GAME: tic-tac-two
+          ITCH_USER: cvennevik
+          PACKAGE: ${{ github.workspace }}/${{ steps.build.outputs.artifact }}
